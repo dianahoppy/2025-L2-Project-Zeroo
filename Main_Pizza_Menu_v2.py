@@ -19,7 +19,7 @@ def phone_check(number):
             ph_number = len(str(response))
 
             if ph_number == 10:
-                return ph_number
+                return response
             else:
                 print(error)
 
@@ -116,6 +116,7 @@ def not_blank(question):
 
 yes_no = ["yes", "no"]
 pickup_del = ["pickup", "delivery"]
+confirm_order = ["confirm", "cancel"]
 
 # lists to hold order details
 user_pizza_order = []
@@ -149,6 +150,7 @@ order_dict = {
 
 # main program heading
 make_statement("Pearly's Pizzeria", "👨‍🍳")
+print()
 
 make_statement("Welcome to Pearly's Pizzeria, where hot and fresh pizza deals are our guarantee!", "🍕")
 
@@ -160,82 +162,107 @@ if want_instructions == "yes":
 
 print()
 
-name = not_blank("Please enter your name: ")
-print()
-
-number = phone_check("Please enter your phone number - 10 digits: ")
-print()
-
-delivery_type = string_check(f"Greetings {name}. Is the order pickup or delivery? ", pickup_del)
-print()
-
-print(f"You chose {delivery_type}")
-
-if delivery_type == "delivery":
-    address = not_blank("Please enter your address: ")
-    delivery_surcharge = 20
-
-print()
-
-# create dataframe / table from dictionary
-pizza_frame: DataFrame = pandas.DataFrame(pizza_dict)
-sides_frame: DataFrame = pandas.DataFrame(sides_dict)
-
-# Rearranging index
-pizza_frame.index = np.arange(1, len(pizza_frame) + 1)
-sides_frame.index = np.arange(1, len(sides_frame) + 1)
-
-# Ask how many pizzas
-
-num_of_pizzas = int_check("How many pizzas for this order? ", 1, 5)
-
-for xyz in range(num_of_pizzas):
-    print(pizza_frame)
-
-    user_pizza_selection = int_check("Enter the number of your pizza: ", 1, 5)
+while True:
+    name = not_blank("Please enter your name: ")
     print()
 
-    print(f"You chose {pizza[user_pizza_selection - 1]} ${pizza_costs[user_pizza_selection - 1]}")
-    user_pizza_order.append(pizza[user_pizza_selection - 1])
-    user_pizza_order_prices.append(pizza_costs[user_pizza_selection - 1])
+    ph_number = phone_check("Please enter your phone number - 10 digits: ")
+    print()
 
-    print(sides_frame)
+    delivery_type = string_check(f"Greetings {name}. Is the order pickup or delivery? ", pickup_del)
+    print()
 
-    user_sides_selection = int_check("Enter the number of your sides: ", 1, 3)
+    print(f"You chose {delivery_type}")
 
-    print(f"You chose {sides[user_sides_selection - 1]} ${sides_costs[user_sides_selection - 1]}")
-    user_sides_order.append(sides[user_sides_selection - 1])
-    user_sides_order_prices.append(sides_costs[user_sides_selection - 1])
+    if delivery_type == "delivery":
+        address = not_blank("Please enter your address: ")
+        delivery_surcharge = 20
 
+    print()
 
-order_frame: DataFrame = pandas.DataFrame(order_dict)
+    # create dataframe / table from dictionary
+    pizza_frame: DataFrame = pandas.DataFrame(pizza_dict)
+    sides_frame: DataFrame = pandas.DataFrame(sides_dict)
 
-print(order_frame)
+    # Rearranging index
+    pizza_frame.index = np.arange(1, len(pizza_frame) + 1)
+    sides_frame.index = np.arange(1, len(sides_frame) + 1)
 
-# testing total pizza costs
-total_pizza_costs = sum(user_pizza_order_prices)
+    # Ask how many pizzas
 
-# testing total pizza costs
-total_sides_costs = sum(user_sides_order_prices)
-print()
+    num_of_pizzas = int_check("How many pizzas for this order? ", 1, 5)
 
+    for xyz in range(num_of_pizzas):
+        print(pizza_frame)
 
-print(f"Total pizza costs: ${total_pizza_costs}")
-print(f"Total sides costs: ${total_sides_costs}")
-if delivery_type == "":
-    print(f"Delivery costs: ${delivery_surcharge}")
-print(f"Total pizza costs: ${total_pizza_costs}")
-print(f"Total costs: ${total_pizza_costs + total_sides_costs}")
-print()
+        user_pizza_selection = int_check("Enter the number of your pizza: ", 1, 5)
+        print()
 
-# total_profit = pizza_dict['profit'].sum()
+        print(f"You chose {pizza[user_pizza_selection - 1]} ${pizza_costs[user_pizza_selection - 1]}")
+        user_pizza_order.append(pizza[user_pizza_selection - 1])
+        user_pizza_order_prices.append(pizza_costs[user_pizza_selection - 1])
 
-# Work out total paid and total profit...
-#total_paid = sum(pizza_costs)
-#total_paid = sum(sides_costs)
+        print(sides_frame)
 
-# print(f"Total Paid: ${total_paid:.2f}")
+        user_sides_selection = int_check("Enter the number of your sides: ", 1, 3)
+
+        print(f"You chose {sides[user_sides_selection - 1]} ${sides_costs[user_sides_selection - 1]}")
+        user_sides_order.append(sides[user_sides_selection - 1])
+        user_sides_order_prices.append(sides_costs[user_sides_selection - 1])
+
+    order_frame: DataFrame = pandas.DataFrame(order_dict)
+    print()
+    print(f"***** {name}'s Order ********")
+    print(f"Phone: {ph_number}")
+
+    if delivery_type == "delivery":
+        print(f"Address: {address}")
+
+    print(order_frame)
+    print()
+
+    # testing total pizza costs
+    total_pizza_costs = sum(user_pizza_order_prices)
+
+    # testing total pizza costs
+    total_sides_costs = sum(user_sides_order_prices)
+    print()
+
+    print(f"Total pizza costs: ${total_pizza_costs}")
+    print(f"Total sides costs: ${total_sides_costs}")
+    if delivery_type == "delivery":
+        print(f"Delivery costs: ${delivery_surcharge}")
+        print(f"Total costs: ${total_pizza_costs + total_sides_costs + delivery_surcharge}")
+
+    else:
+        print(f"Total costs: ${total_pizza_costs + total_sides_costs}")
+
+    print()
+
+    confirm_order = string_check("Do you want to confirm or cancel this order? ", confirm_order, 1)
+
+    if confirm_order == 'confirm':
+        print(f"Your order has gone through")
+    else:
+        print()
+        print(f"Your order has been cancelled")
+
+    # clear stored user order
+    user_pizza_order.clear()
+    user_pizza_order_prices.clear()
+    user_sides_order.clear()
+    user_sides_order_prices.clear()
+
+    print()
+    make_another_order = string_check("Would you like to make another order? ", yes_no, )
+
+    if make_another_order == 'yes':
+        print("Go through again.")
+
+        continue
+    else:
+        print("The program ends.")
+        break
 
 make_statement("Thank you for supporting Pearly's Pizzeria!", "🍕")
 print()
-
